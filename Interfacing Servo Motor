@@ -1,0 +1,58 @@
+//INTERFACE SERVO WITH STM32
+//CIRCUIT DIGEST
+
+#include<Servo.h>                                                          //including servo library
+
+#include<LiquidCrystal.h>                                               //including LCD display library
+
+const int rs = PB0, en = PB1, d4 = PB10 , d5 = PB11 , d6 = PC13, d7 = PC14;   //declaring pin names and pin numbers of lcd
+
+LiquidCrystal lcd(rs,en,d4,d5,d6,d7);                               //setting lcd and its paramaters
+
+int servoPin = PA0;                                //declare and initialize pin for servo output PWM 
+
+int potPin = PA3;                                     //potentiometer ADC input 
+Servo servo;                                            // creating variable servo with datatype Servo
+void setup()                            
+{ 
+  lcd.begin(16,2);                                                           //setting lcd as 16x2
+
+  lcd.setCursor(0,0);                                                        //setting cursor at first row and first column
+
+  lcd.print("CIRCUIT DIGEST");                                               //puts CIRCUIT DIGEST in LCD
+
+  lcd.setCursor(0,1);                                                        //setting cursor at second row and first column
+
+  lcd.print("SERVO WITH STM32");                                             //puts SERVO WITH STM32 in LCD
+
+  delay(3000);                                                               // delays for 3 seconds
+
+  lcd.clear();                                                               //clears lcd display
+
+  servo.attach(servoPin);   //it connects pin PA0 with motor as control feedback by providing pulses
+}
+void loop()
+
+{
+
+ lcd.clear();                                                                 //clears lcd
+
+ int angle;                                                                   //declare varible angle as int
+
+ int reading;                                                                 //declare varible reading as int
+
+ reading = analogRead(potPin);                                                //read analog value from pin PA3
+
+ angle = (reading/24);                                                        //it divides ADC the value according to max angle 170 deg
+
+ servo.write(angle);                                                          //it puts angle value at servo
+
+ lcd.setCursor(0,0);                                                          //setting cursor at first row and first column
+
+ lcd.print("ANGLE:");                                                         //puts ANGLE in LCD
+
+ lcd.print(angle);                                                            //puts value at angle
+
+ delay(100);                                                                  //delay in time
+
+}  
