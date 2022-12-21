@@ -1,0 +1,142 @@
+#include <LiquidCrystal.h>                           //Library for LCD display                    
+
+const int rs = PB11, en = PB10, d4 = PB0, d5 = PB1, d6 = PC13, d7 = PC14;      //Pins that are connected between LCD and STM32
+
+LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
+
+int receive = 0;
+
+void setup()
+
+{
+
+  lcd.begin(16,2);           //LCD set at 16x2 mode
+
+  pinMode(PA0,INPUT);       //Push buttons as INPUT pins
+
+  pinMode(PA1,INPUT);
+
+  lcd.print("STM32 WITH GSM");   //Display Welcome message
+
+  lcd.setCursor(0,1);
+
+  lcd.print("SIM800C");
+  Serial1.begin(9600);   // Setting the baud rate of GSM Module 
+  delay(1000);
+  lcd.clear();
+}
+void loop()
+{
+  lcd.clear();
+
+  lcd.setCursor(0,0);
+
+  lcd.print("S to Send sms");
+
+  lcd.setCursor(0,1);
+
+  lcd.print("R to Receive sms");
+
+  delay(100);
+  int a = digitalRead(PA0);          //Read status of the push buttons
+  int b = digitalRead(PA1);
+
+   if (a == 1)                         // Depeding upon which push button is pressed the respected function is called
+
+       {
+         SendMessage();
+
+       } 
+else if( b == 1)
+
+      {
+
+         RecieveMessage();
+      }
+} 
+ void SendMessage()      //Function to Send Message
+
+{
+
+  lcd.clear();
+
+  lcd.print("Sending sms");
+
+  delay(1000);
+
+  Serial1.println("AT+CMGF=1");    //Sets the GSM Module in Text Mode
+
+  delay(1000);  
+
+  Serial1.println("AT+CMGS=\"+91XXXXXXXXXX\"\r"); // Replace x with mobile number
+
+  delay(1000);
+
+  Serial1.println("Hi Circuit Digest from GSM Module"); // The SMS text you want to send
+
+  delay(100);
+
+  Serial1.println((char)26);// ASCII code of CTRL+Z
+
+  delay(1000);
+
+  lcd.clear();
+
+  lcd.print("SMS SENT");
+
+  delay(1000);
+
+}
+ void RecieveMessage()         //Function to Receive Message
+{
+  lcd.clear();
+
+  lcd.print("Receiving sms");
+  Serial1.println("AT+CNMI=2,2,0,0,0"); // AT Command to recieve a live SMS
+  delay(1000);
+  while(1)
+  {
+           if(Serial1.available())
+            {
+                do
+                  {
+                     while ( !Serial1.available() );    
+                  } while ( '"' != Serial1.read() );
+               do
+                  {
+                      while ( !Serial1.available() );    
+                  } while ( '"' != Serial1.read() );
+               do
+                 {
+                      while ( !Serial1.available() );    
+                  } while ( '"' != Serial1.read() );
+               do
+                 {
+                    while ( !Serial1.available() );    
+                 } while ( '"' != Serial1.read() );
+                do
+                  {
+                     while ( !Serial1.available() );                  
+                  } while ( '"' != Serial1.read() );
+                do
+                 {
+                    while ( !Serial1.available() );                  
+                  } while ( '"' != Serial1.read() );
+                  while ( !Serial1.available() );
+                  receive = Serial1.read();     
+                  while ( !Serial1.available() );
+                  receive = Serial1.read();
+    lcd.clear();
+    while(1)
+    {
+        while ( !Serial1.available() );
+
+        receive = Serial1.read();
+        if ( receive == '\r' )        
+              break:
+        else
+             lcd.write(receive);
+     }
+}
+}
+}
