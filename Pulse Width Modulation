@@ -1,0 +1,72 @@
+#include <LiquidCrystal.h>     // include the LCD library
+
+const int rs = PB11, en = PB10, d4 = PB0, d5 = PB1, d6 = PC13, d7 = PC14;  //mention the pin names to with LCD is connected to 
+
+LiquidCrystal lcd(rs, en, d4, d5, d6, d7);  //Initialize the LCD
+
+
+const int analoginput   = PA4;  // Input from potentiometer                          
+
+const int led           = PA9;  // LED output
+
+const int fan           = PA8;  // fan output
+
+
+
+void setup() 
+
+{
+
+    lcd.begin(16,2);     //Getting LCD ready
+
+    lcd.clear();  //Clears LCD
+
+    lcd.setCursor(0,0);  //Sets cursor at row0 and column0
+
+    lcd.print("CIRCUIT DIGEST");   //Displays Circuit Digest
+
+    lcd.setCursor(0,1);          //Sets Cursor at column0 and row1
+
+    lcd.print("PWM USING STM32");   //Displays PWM using STM32
+
+    delay(2000);       // Delay yime
+
+    lcd.clear();       // Clears LCD
+
+    pinMode(analoginput, INPUT);   // set pin mode analoginput as INPUT
+
+    pinMode(led, PWM);           // set pin mode led as PWM output
+
+    pinMode(fan, PWM);            // set pin mode fan as PWM output
+
+}    
+
+   
+
+
+void loop()
+
+
+   { 
+
+    int valueadc = analogRead(analoginput);     //gets analog value from pot and store in variable,converts to digital          
+
+    int result = map(valueadc, 0, 4095, 0, 65535); //maps the (0to4095 into 0to65535) and stores in result variable
+
+    pwmWrite(led, result);           //puts resultin PWM form
+
+    pwmWrite(fan, result);           //puts resultin PWM form
+
+    lcd.setCursor(0,0);             //Sets cursor at row0 and column0
+
+    lcd.print("ADC value= ");           // prints the words in ""
+
+    lcd.print(valueadc);           //displays value
+
+    lcd.setCursor(0,1);             //Sets Cursor at column0 and row1
+
+    lcd.print("Output =   ");          //prints the words in ""
+
+    lcd.print(result);           //displays value result
+
+ }
